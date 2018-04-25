@@ -15,7 +15,7 @@ namespace NFePHP\NFe\Auxiliar;
  * @link      http://github.com/nfephp-org/sped-nfe for the canonical source repository
  */
 
-use NFePHP\Common\Dom\Dom;
+use NFePHP\CommonV4\Dom\Dom;
 
 class Response
 {
@@ -78,7 +78,7 @@ class Response
      * Normalmente essas falhas ocorrem devido a falhas internas
      * nos servidores da SEFAZ
      *
-     * @param  NFePHP\Common\Dom\Dom $dom
+     * @param  NFePHP\CommonV4\Dom\Dom $dom
      * @return string
      */
     protected static function checkForFault($dom)

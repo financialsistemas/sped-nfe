@@ -15,17 +15,17 @@ namespace NFePHP\NFe;
  * @link      http://github.com/nfephp-org/sped-nfe for the canonical source repository
  */
 
-use NFePHP\Common\Base\BaseTools;
-use NFePHP\Common\DateTime\DateTime;
-use NFePHP\Common\LotNumber\LotNumber;
-use NFePHP\Common\Strings\Strings;
-use NFePHP\Common\Files;
-use NFePHP\Common\Exception;
-use NFePHP\Common\Dom\Dom;
+use NFePHP\CommonV4\Base\BaseTools;
+use NFePHP\CommonV4\DateTime\DateTime;
+use NFePHP\CommonV4\LotNumber\LotNumber;
+use NFePHP\CommonV4\Strings\Strings;
+use NFePHP\CommonV4\Files;
+use NFePHP\CommonV4\Exception;
+use NFePHP\CommonV4\Dom\Dom;
 use NFePHP\NFe\Auxiliar\Response;
 use NFePHP\NFe\Mail;
 use NFePHP\NFe\Auxiliar\IdentifyNFe;
-use NFePHP\Common\Dom\ValidXsd;
+use NFePHP\CommonV4\Dom\ValidXsd;
 
 if (!defined('NFEPHP_ROOT')) {
     define('NFEPHP_ROOT', dirname(dirname(__FILE__)));

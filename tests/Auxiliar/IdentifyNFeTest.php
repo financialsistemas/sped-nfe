@@ -3,7 +3,7 @@
 namespace NFePHP\NFe\Tests\Auxiliar;
 
 use NFePHP\NFe\Auxiliar\IdentifyNFe;
-use NFePHP\Common\Dom\Dom;
+use NFePHP\CommonV4\Dom\Dom;
 
 class IdentifyNFeTest extends \PHPUnit_Framework_TestCase
 {

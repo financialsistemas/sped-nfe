@@ -22,6 +22,6 @@ $comPdf = true; //se true, anexa a DANFE no e-mail
 try {
     $nfe->enviaMail($pathXml, $aMails, $templateFile, $comPdf, $pathPdf);
     echo "DANFE enviada com sucesso!!!";
-} catch (NFePHP\Common\Exception\RuntimeException $e) {
+} catch (NFePHP\CommonV4\Exception\RuntimeException $e) {
     echo $e->getMessage();
 }

@@ -16,7 +16,7 @@ namespace NFePHP\NFe\Auxiliar;
  */
 
 use \DOMDocument;
-use NFePHP\Common\Identify\Identify;
+use NFePHP\CommonV4\Identify\Identify;
 
 class IdentifyNFe extends Identify
 {

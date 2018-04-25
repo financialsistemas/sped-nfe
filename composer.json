@@ -19,7 +19,7 @@
     ],
     "require": {
         "php" : "~5.5|~7.0",
-        "nfephp-org/sped-common" : "^4.1",
+        "financialsistemas/sped-common": "dev-v4.1-finsis",
         "easyframework/collections": "^5.0",
         "zendframework/zend-servicemanager": "^2.5",
         "zendframework/zend-mail": "^2.5",

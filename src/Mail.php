@@ -15,10 +15,10 @@ namespace NFePHP\NFe;
  * @link      http://github.com/nfephp-org/sped-nfe for the canonical source repository
  */
 
-use NFePHP\Common\Dom\Dom;
-use NFePHP\Common\DateTime\DateTime;
-use NFePHP\Common\Base\BaseMail;
-use NFePHP\Common\Exception;
+use NFePHP\CommonV4\Dom\Dom;
+use NFePHP\CommonV4\DateTime\DateTime;
+use NFePHP\CommonV4\Base\BaseMail;
+use NFePHP\CommonV4\Exception;
 use Html2Text\Html2Text;
 use \DOMDocument;
 

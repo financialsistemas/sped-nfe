@@ -16,10 +16,10 @@ namespace NFePHP\NFe;
  * @link      http://github.com/nfephp-org/sped-nfe for the canonical source repository
  */
 
-use NFePHP\Common\DateTime\DateTime;
-use NFePHP\Common\Base\BaseMake;
-use NFePHP\Common\Dom\Dom;
-use NFePHP\Common\Exception\RuntimeException;
+use NFePHP\CommonV4\DateTime\DateTime;
+use NFePHP\CommonV4\Base\BaseMake;
+use NFePHP\CommonV4\Dom\Dom;
+use NFePHP\CommonV4\Exception\RuntimeException;
 use \DOMDocument;
 use \DOMElement;
 use \DOMNode;

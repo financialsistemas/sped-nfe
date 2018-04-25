@@ -16,8 +16,8 @@ namespace NFePHP\NFe;
  * @link      http://github.com/nfephp-org/sped-nfe for the canonical source repository
  */
 
-use NFePHP\Common\Strings\Strings;
-use NFePHP\Common\Exception;
+use NFePHP\CommonV4\Strings\Strings;
+use NFePHP\CommonV4\Exception;
 use NFePHP\NFe\Make;
 
 class Convert
