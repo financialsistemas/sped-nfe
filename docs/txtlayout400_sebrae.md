@@ -1,4 +1,4 @@
-## LAYOUT NFe v4.00 (FORMATO LOCAL do NFePHP)
+## LAYOUT NFe **Emissor SEBRAE** v4.00 *Em desenvolvimento*
 - Nota Técnica 2016.002 - v1.10
 - Nota Técnica 2016.002 - v1.20
 - Nota Técnica 2016.002 - v1.30
@@ -10,12 +10,28 @@
 - Nota Técnica 2016.002 - v1.51
 - Nota Técnica 2016.002 - v1.60
 
+> IMPORTANTE: Alguns campos tem comportamentos erraticos, ou seja não seguem um determinado padrão, e isso não será coberto pela API.
+> Ou seja não será importado em TODAS as condições. O parser não tem como reagir a essas incogruências.
+
+> **NOTA: Essa estrutura foi obtida em parte por engenharia reversa, e portanto sujeita e ERROS pois não existe um Manual de formação do TXT oficial. E nem todos os campos puderam ser verificados e validados.**
+
+> **NOTA: Para o emissor SEBRAE, alguns campos finalizam sem o pipe "|", mas no caso do nosso parser, TODOS os campos devem finalizar com "|".**
+
+## Pontos de Falha (Incongruências do emissor SEBRAE)
+
+Entidade **I** - o emissor da SEBRAE faz uma loucura quando não tem CEST, mas é indicada cBenef, indEscala, e CNPJFab, joga isso na linha "I".
+Porém se tem o CEST coloca como indicado aqui na entidade I05C.
+
+Entidade **YA01** - o emissor do SEBRAE, coloca na mesma linha TODAS as formas de pagamento estabelecidas, ao invés de criar um novo campo como seria de esperar. 
+
+## Estrutura (Lista de entidades)
+
 ```
 NOTAFISCAL|numero de notas|
 
-A|versao|Id|pk_nItem|
+A|versao|Id|
 
-B|cUF|cNF|natOp|mod|serie|nNF|dhEmi|dhSaiEnt|tpNF|idDest|cMunFG|tpImp|tpEmis|cDV|tp Amb|finNFe|indFinal|indPres|procEmi|verProc|dhCont|xJust|
+B|cUF|cNF|natOp|mod|serie|nNF|dhEmi|dhSaiEnt|tpNF|idDest|cMunFG|tpImp|tpEmis|cDV|tpAmb|finNFe|indFinal|indPres|procEmi|verProc|dhCont|xJust|
 
 BA|
 
@@ -40,6 +56,8 @@ C02|CNPJ|
 C02a|CPF|
 
 C05|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|CEP|cPais|xPais|fone|
+
+D|CNPJ|xOrgao|matr|xAgente|fone|UF|nDAR|dEmi|vDAR|repEmi|dPag|
 
 E|xNome|indIEDest|IE|ISUF|IM|email|
 
@@ -71,7 +89,7 @@ GA03|CPF|
 
 H|item|infAdProd|
 
-I|cProd|cEAN|xProd|NCM|cBenef|EXTIPI|CFOP|uCom|qCom|vUnCom|vProd|cEANTrib|uTrib|qTrib|vUnTrib|vFrete|vSeg|vDesc|vOutro|indTot|xPed|nItemPed|nFCI|
+I|cProd|cEAN|xProd|NCM|EXTIPI|CFOP|uCom|qCom|vUnCom|vProd|cEANTrib|uTrib|qTrib|vUnTrib|vFrete|vSeg|vDesc|vOutro|indTot|xPed|nItemPed|nFCI|cBenef|
 
 I05A|NVE|
 
@@ -109,7 +127,7 @@ N02|orig|CST|modBC|vBC|pICMS|vICMS|pFCP|vFCP|
 
 N03|orig|CST|modBC|vBC|pICMS|vICMS|vBCFCP|pFCP|vFCP|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|
 
-N04|orig|CST|modBC|pRedBC|vBC|pICMS|vICMS|BCFCP|pFCP|vFCP|vICMSDeson|motDesICMS|
+N04|orig|CST|modBC|pRedBC|vBC|pICMS|vICMS|vBCFCP|pFCP|vFCP|vICMSDeson|motDesICMS|
 
 N05|orig|CST|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|vICMSDeson|motDesICMS|
 
@@ -131,15 +149,15 @@ N10c|orig|CSOSN|pCredSN|vCredICMSSN|
 
 N10d|orig|CSOSN|
 
-N10e|orig|CSOSN|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|pCredSN|vCredICMSSN|
+N10e|orig|CSOSN|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|pCredSN|vCredICMSSN|pCredSN|vCredICMSSN|
 
 N10f|orig|CSOSN|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|
 
-N10g|orig|CSOSN|vBCSTRet|pST|vICMSSTRet|vBCFCPSTRet|pFCPSTRet|vFCPSTRet|pRedBCEfet|vBCEfet|pICMSEfet|vICMSEfet|
+N10g|orig|CSOSN|vBCSTRet|pST|vICMSSTRet|vBCFCPSTRet|pFCPSTRet|vFCPSTRet|
 
 N10h|orig|CSOSN|modBC|vBC|pRedBC|pICMS|vICMS|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|pCredSN|vCredICMSSN|
 
-NA|vBCUFDest|vBCFCPUFDest|pFCPUFDest|pICMSUFDest|pICMSInter|pICMSInterPart|vFCPUFDest|vICMSUFDest|vICMSFRemet|
+NA|vBCUFDest|vBCFCPUFDest|pFCPUFDest|pICMSUFDest|pICMSInter|pICMSInterPart|vFCPUFDest|vICMSUFDest|vICMSUFRemet|
 
 O|CNPJProd|cSelo|qSelo|cEnq|
 
@@ -171,7 +189,7 @@ R|vPIS|
 
 R02|vBC|pPIS|
 
-R04|qBCProd|vAliqProd|vPIS|
+R04|qBCProd|vAliqProd|
 
 S|
 
@@ -195,11 +213,19 @@ T04|qBCProd|vAliqProd|
 
 U|vBC|vAliq|vISSQN|cMunFG|cListServ|vDeducao|vOutro|vDescIncond|vDescCond|vISSRet|indISS|cServico|cMun|cPais|nProcesso|indIncentivo|
 
-UA|pDevol|vIPIDevol|
+UA|pDevol|
+
+UA03|vIPIDevol|
 
 W|
 
-W02|vBC|vICMS|vICMSDeson|vFCP|vBCST|vST|vFCPST|vFCPSTRet|vProd|vFrete|vSeg|vDesc|vII|vIPI|vIPIDevol|vPIS|vCOFINS|vOutro|vNF|vTotTrib|vFCPUFDest|vICMSUFDest|vICMSUFRemet|
+W02|vBC|vICMS|vICMSDeson|vFCP|vBCST|vST|vFCPST|vFCPSTRet|vProd|vFrete|vSeg|vDesc|vII|vIPI|vIPIDevol|vPIS|vCOFINS|vOutro|vNF|vTotTrib|
+
+W04c|vFCPUFDest|
+
+W04e|vICMSUFDest|
+
+W04g|vICMSUFRemet|
 
 W17|vServ|vBC|vISS|vPIS|vCOFINS|dCompet|vDeducao|vOutro|vDescIncond|vDescCond|vISSRet|cRegTrib|
 
@@ -227,13 +253,17 @@ X26|qVol|esp|marca|nVol|pesoL|pesoB|
 
 X33|nLacre|
 
-Y|vTroco|
+Y|
 
 Y02|nFat|vOrig|vDesc|vLiq|
 
 Y07|nDup|dVenc|vDup|
 
-YA|indPag|tPag|vPag|CNPJ|tBand|cAut|tpIntegra|
+YA|vTroco|
+
+YA01|indPag|tPag|vPag|
+
+YA04|tpIntegra|CNPJ|tBand|cAut|
 
 Z|infAdFisco|infCpl|
 
@@ -254,5 +284,4 @@ ZC04|dia|qtde|
 ZC10|xDed|vDed|
 
 ZX01|qrcode|urlChave|
-
 ```
