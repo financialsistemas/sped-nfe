@@ -15,6 +15,8 @@
 
 > **NOTA: Essa estrutura foi obtida em parte por engenharia reversa, e portanto sujeita e ERROS pois não existe um Manual de formação do TXT oficial. E nem todos os campos puderam ser verificados e validados.**
 
+> **TODO: O conversor ainda não executa uma conversão completa no padrão da SEBRAE, devido a falta de informações, complexidade inserida pela SEBRAE e falta de testes.**
+
 > **NOTA: Para o emissor SEBRAE, alguns campos finalizam sem o pipe "|", mas no caso do nosso parser, TODOS os campos devem finalizar com "|".**
 
 ## Pontos de Falha (Incongruências do emissor SEBRAE)
@@ -26,262 +28,264 @@ Entidade **YA01** - o emissor do SEBRAE, coloca na mesma linha TODAS as formas d
 
 ## Estrutura (Lista de entidades)
 
-```
-NOTAFISCAL|numero de notas|
+> NOTA: campos em negrito são diferentes do padrão LOCAL
 
-A|versao|Id|
 
-B|cUF|cNF|natOp|mod|serie|nNF|dhEmi|dhSaiEnt|tpNF|idDest|cMunFG|tpImp|tpEmis|cDV|tpAmb|finNFe|indFinal|indPres|procEmi|verProc|dhCont|xJust|
+`NOTAFISCAL|numero de notas|`
 
-BA|
+**`A|versao|Id|`**
 
-BA02|refNFe|
+`B|cUF|cNF|natOp|mod|serie|nNF|dhEmi|dhSaiEnt|tpNF|idDest|cMunFG|tpImp|tpEmis|cDV|tpAmb|finNFe|indFinal|indPres|procEmi|verProc|dhCont|xJust|`
 
-BA03|cUF|AAMM|CNPJ|mod|serie|nNF|
+`BA|`
 
-BA10|cUF|AAMM|IE|mod|serie|nNF|
+`BA02|refNFe|`
 
-BA13|CNPJ|
+`BA03|cUF|AAMM|CNPJ|mod|serie|nNF|`
 
-BA14|CPF|
+`BA10|cUF|AAMM|IE|mod|serie|nNF|`
 
-B19|refCTe|
+`BA13|CNPJ|`
 
-BA20|mod|nECF|nCOO|
+`BA14|CPF|`
 
-C|xNome|xFant|IE|IEST|IM|CNAE|CRT|
+`B19|refCTe|`
 
-C02|CNPJ|
+`BA20|mod|nECF|nCOO|`
 
-C02a|CPF|
+`C|xNome|xFant|IE|IEST|IM|CNAE|CRT|`
 
-C05|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|CEP|cPais|xPais|fone|
+`C02|CNPJ|`
 
-D|CNPJ|xOrgao|matr|xAgente|fone|UF|nDAR|dEmi|vDAR|repEmi|dPag|
+`C02a|CPF|`
 
-E|xNome|indIEDest|IE|ISUF|IM|email|
+`C05|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|CEP|cPais|xPais|fone|`
 
-E02|CNPJ|
+`D|CNPJ|xOrgao|matr|xAgente|fone|UF|nDAR|dEmi|vDAR|repEmi|dPag|`
 
-E03|CPF|
+`E|xNome|indIEDest|IE|ISUF|IM|email|`
 
-E03a|idEstrangeiro|
+`E02|CNPJ|`
 
-E05|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|CEP|cPais|xPais|fone|
+`E03|CPF|`
 
-F|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|
+`E03a|idEstrangeiro|`
 
-F02|CNPJ|
+`E05|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|CEP|cPais|xPais|fone|`
 
-F02a|CPF|
+`F|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|`
 
-G|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|
+`F02|CNPJ|`
 
-G02|CNPJ|
+`F02a|CPF|`
 
-G02a|CPF|
+`G|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|`
 
-GA|
+`G02|CNPJ|`
 
-GA02|CNPJ|
+`G02a|CPF|`
 
-GA03|CPF|
+`GA|`
 
-H|item|infAdProd|
+`GA02|CNPJ|`
 
-I|cProd|cEAN|xProd|NCM|EXTIPI|CFOP|uCom|qCom|vUnCom|vProd|cEANTrib|uTrib|qTrib|vUnTrib|vFrete|vSeg|vDesc|vOutro|indTot|xPed|nItemPed|nFCI|cBenef|
+`GA03|CPF|`
 
-I05A|NVE|
+`H|item|infAdProd|`
 
-I05C|CEST|indEscala|CNPJFab|
+**`I|cProd|cEAN|xProd|NCM|EXTIPI|CFOP|uCom|qCom|vUnCom|vProd|cEANTrib|uTrib|qTrib|vUnTrib|vFrete|vSeg|vDesc|vOutro|indTot|xPed|nItemPed|nFCI|`**
 
-I18|nDI|dDI|xLocDesemb|UFDesemb|dDesemb|tpViaTransp|vAFRMM|tpIntermedio|CNPJ|UFTerceiro|cExportador|
+`I05A|NVE|`
 
-I25|nAdicao|nSeqAdic|cFabricante|vDescDI|nDraw|
+**`I05C|CEST|indEscala|CNPJFab|cBenef|`**
 
-I50|nDraw|
+`I18|nDI|dDI|xLocDesemb|UFDesemb|dDesemb|tpViaTransp|vAFRMM|tpIntermedio|CNPJ|UFTerceiro|cExportador|`
 
-I52|nRE|chNFe|qExport|
+`I25|nAdicao|nSeqAdic|cFabricante|vDescDI|nDraw|`
 
-I80|nLote|qLote|dFab|dVal|cAgreg|
+`I50|nDraw|`
 
-JA|tpOp|chassi|cCor|xCor|pot|cilin|pesoL|pesoB|nSerie|tpComb|nMotor|CMT|dist|anoMod|anoFab|tpPint|tpVeic|espVeic|VIN|condVeic|cMod|cCorDENATRAN|lota|tpRest|
+`I52|nRE|chNFe|qExport|`
 
-K|cProdANVISA|vPMC|
+`I80|nLote|qLote|dFab|dVal|cAgreg|`
 
-L|tpArma|nSerie|nCano|descr|
+`JA|tpOp|chassi|cCor|xCor|pot|cilin|pesoL|pesoB|nSerie|tpComb|nMotor|CMT|dist|anoMod|anoFab|tpPint|tpVeic|espVeic|VIN|condVeic|cMod|cCorDENATRAN|lota|tpRest|`
 
-LA|cProdANP|descANP|pGLP|pGNn|pGNi|vPart|CODIF|qTemp|UFCons|
+`K|cProdANVISA|vPMC|`
 
-LA07|qBCProd|vAliqProd|vCIDE|
+`L|tpArma|nSerie|nCano|descr|`
 
-LA11|nBico|nBomba|nTanque|vEncIni|vEncFin|
+`LA|cProdANP|descANP|pGLP|pGNn|pGNi|vPart|CODIF|qTemp|UFCons|`
 
-LB|nRECOPI|
+`LA07|qBCProd|vAliqProd|vCIDE|`
 
-M|vTotTrib|
+`LA11|nBico|nBomba|nTanque|vEncIni|vEncFin|`
 
-N|
+`LB|nRECOPI|`
 
-N02|orig|CST|modBC|vBC|pICMS|vICMS|pFCP|vFCP|
+`M|vTotTrib|`
 
-N03|orig|CST|modBC|vBC|pICMS|vICMS|vBCFCP|pFCP|vFCP|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|
+`N|`
 
-N04|orig|CST|modBC|pRedBC|vBC|pICMS|vICMS|vBCFCP|pFCP|vFCP|vICMSDeson|motDesICMS|
+`N02|orig|CST|modBC|vBC|pICMS|vICMS|pFCP|vFCP|`
 
-N05|orig|CST|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|vICMSDeson|motDesICMS|
+`N03|orig|CST|modBC|vBC|pICMS|vICMS|vBCFCP|pFCP|vFCP|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|`
 
-N06|orig|CST|vICMSDeson|motDesICMS|
+`N04|orig|CST|modBC|pRedBC|vBC|pICMS|vICMS|vBCFCP|pFCP|vFCP|vICMSDeson|motDesICMS|`
 
-N07|orig|CST|modBC|pRedBC|vBC|pICMS|vICMSOp|pDif|vICMSDif|vICMS|vBCFCP|pFCP|vFCP|
+`N05|orig|CST|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|vICMSDeson|motDesICMS|`
 
-N08|orig|CST|vBCSTRet|pST|vICMSSTRet|vBCFCPSTRet|pFCPSTRet|vFCPSTRet|pRedBCEfet|vBCEfet|pICMSEfet|vICMSEfet|
+`N06|orig|CST|vICMSDeson|motDesICMS|`
 
-N09|orig|CST|modBC|pRedBC|vBC|pICMS|vICMS|vBCFCP|pFCP|vFCP|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|vICMSDeson|motDesICMS|
+`N07|orig|CST|modBC|pRedBC|vBC|pICMS|vICMSOp|pDif|vICMSDif|vICMS|vBCFCP|pFCP|vFCP|`
 
-N10|orig|CST|modBC|vBC|pRedBC|pICMS|vICMS|vBCFCP|pFCP|vFCP|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|vICMSDeson|motDesICMS|
+`N08|orig|CST|vBCSTRet|pST|vICMSSTRet|vBCFCPSTRet|pFCPSTRet|vFCPSTRet|pRedBCEfet|vBCEfet|pICMSEfet|vICMSEfet|`
 
-N10a|orig|CST|modBC|vBC|pRedBC|pICMS|vICMS|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|pBCOp|UFST|
+`N09|orig|CST|modBC|pRedBC|vBC|pICMS|vICMS|vBCFCP|pFCP|vFCP|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|vICMSDeson|motDesICMS|`
 
-N10b|orig|CST|vBCSTRet|vICMSSTRet|vBCSTDest|vICMSSTDest|
+`N10|orig|CST|modBC|vBC|pRedBC|pICMS|vICMS|vBCFCP|pFCP|vFCP|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|vICMSDeson|motDesICMS|`
 
-N10c|orig|CSOSN|pCredSN|vCredICMSSN|
+`N10a|orig|CST|modBC|vBC|pRedBC|pICMS|vICMS|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|pBCOp|UFST|`
 
-N10d|orig|CSOSN|
+`N10b|orig|CST|vBCSTRet|vICMSSTRet|vBCSTDest|vICMSSTDest|`
 
-N10e|orig|CSOSN|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|pCredSN|vCredICMSSN|pCredSN|vCredICMSSN|
+`N10c|orig|CSOSN|pCredSN|vCredICMSSN|`
 
-N10f|orig|CSOSN|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|
+`N10d|orig|CSOSN|`
 
-N10g|orig|CSOSN|vBCSTRet|pST|vICMSSTRet|vBCFCPSTRet|pFCPSTRet|vFCPSTRet|
+`N10e|orig|CSOSN|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|pCredSN|vCredICMSSN|pCredSN|vCredICMSSN|`
 
-N10h|orig|CSOSN|modBC|vBC|pRedBC|pICMS|vICMS|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|pCredSN|vCredICMSSN|
+`N10f|orig|CSOSN|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|`
 
-NA|vBCUFDest|vBCFCPUFDest|pFCPUFDest|pICMSUFDest|pICMSInter|pICMSInterPart|vFCPUFDest|vICMSUFDest|vICMSUFRemet|
+**`N10g|orig|CSOSN|vBCSTRet|pST|vICMSSTRet|vBCFCPSTRet|pFCPSTRet|vFCPSTRet|`**
 
-O|CNPJProd|cSelo|qSelo|cEnq|
+`N10h|orig|CSOSN|modBC|vBC|pRedBC|pICMS|vICMS|modBCST|pMVAST|pRedBCST|vBCST|pICMSST|vICMSST|vBCFCPST|pFCPST|vFCPST|pCredSN|vCredICMSSN|`
 
-O07|CST|vIPI|
+`NA|vBCUFDest|vBCFCPUFDest|pFCPUFDest|pICMSUFDest|pICMSInter|pICMSInterPart|vFCPUFDest|vICMSUFDest|vICMSUFRemet|`
 
-O08|CST|
+`O|CNPJProd|cSelo|qSelo|cEnq|`
 
-O10|vBC|pIPI|
+`O07|CST|vIPI|`
 
-O11|qUnid|vUnid|
+`O08|CST|`
 
-P|vBC|vDespAdu|vII|vIOF|
+`O10|vBC|pIPI|`
 
-Q|
+`O11|qUnid|vUnid|`
 
-Q02|CST|vBC|pPIS|vPIS|
+`P|vBC|vDespAdu|vII|vIOF|`
 
-Q03|CST|qBCProd|vAliqProd|vPIS|
+`Q|`
 
-Q04|CST|
+`Q02|CST|vBC|pPIS|vPIS|`
 
-Q05|CST|vPIS|
+`Q03|CST|qBCProd|vAliqProd|vPIS|`
 
-Q07|vBC|pPIS|
+`Q04|CST|`
 
-Q10|qBCProd|vAliqProd|
+`Q05|CST|vPIS|`
 
-R|vPIS|
+`Q07|vBC|pPIS|`
 
-R02|vBC|pPIS|
+`Q10|qBCProd|vAliqProd|`
 
-R04|qBCProd|vAliqProd|
+`R|vPIS|`
 
-S|
+`R02|vBC|pPIS|`
 
-S02|CST|vBC|pCOFINS|vCOFINS|
+**`R04|qBCProd|vAliqProd|`**
 
-S03|CST|qBCProd|vAliqProd|vCOFINS|
+`S|`
 
-S04|CST|
+`S02|CST|vBC|pCOFINS|vCOFINS|`
 
-S05|CST|vCOFINS|
+`S03|CST|qBCProd|vAliqProd|vCOFINS|`
 
-S07|vBC|pCOFINS|
+`S04|CST|`
 
-S09|qBCProd|vAliqProd|
+`S05|CST|vCOFINS|`
 
-T|vCOFINS|
+`S07|vBC|pCOFINS|`
 
-T02|vBC|pCOFINS|
+`S09|qBCProd|vAliqProd|`
 
-T04|qBCProd|vAliqProd|
+`T|vCOFINS|`
 
-U|vBC|vAliq|vISSQN|cMunFG|cListServ|vDeducao|vOutro|vDescIncond|vDescCond|vISSRet|indISS|cServico|cMun|cPais|nProcesso|indIncentivo|
+`T02|vBC|pCOFINS|`
 
-UA|pDevol|
+`T04|qBCProd|vAliqProd|`
 
-UA03|vIPIDevol|
+`U|vBC|vAliq|vISSQN|cMunFG|cListServ|vDeducao|vOutro|vDescIncond|vDescCond|vISSRet|indISS|cServico|cMun|cPais|nProcesso|indIncentivo|`
 
-W|
+**`UA|pDevol|`**
 
-W02|vBC|vICMS|vICMSDeson|vFCP|vBCST|vST|vFCPST|vFCPSTRet|vProd|vFrete|vSeg|vDesc|vII|vIPI|vIPIDevol|vPIS|vCOFINS|vOutro|vNF|vTotTrib|
+**`UA03|vIPIDevol|`**
 
-W04c|vFCPUFDest|
+`W|`
 
-W04e|vICMSUFDest|
+**`W02|vBC|vICMS|vICMSDeson|vFCP|vBCST|vST|vFCPST|vFCPSTRet|vProd|vFrete|vSeg|vDesc|vII|vIPI|vIPIDevol|vPIS|vCOFINS|vOutro|vNF|vTotTrib|`**
 
-W04g|vICMSUFRemet|
+**`W04c|vFCPUFDest|`**
 
-W17|vServ|vBC|vISS|vPIS|vCOFINS|dCompet|vDeducao|vOutro|vDescIncond|vDescCond|vISSRet|cRegTrib|
+**`W04e|vICMSUFDest|`**
 
-W23|vRetPIS|vRetCOFINS|vRetCSLL|vBCIRRF|vIRRF|vBCRetPrev|vRetPrev|
+**`W04g|vICMSUFRemet|`**
 
-X|modFrete|
+`W17|vServ|vBC|vISS|vPIS|vCOFINS|dCompet|vDeducao|vOutro|vDescIncond|vDescCond|vISSRet|cRegTrib|`
 
-X03|xNome|IE|xEnder|xMun|UF|
+`W23|vRetPIS|vRetCOFINS|vRetCSLL|vBCIRRF|vIRRF|vBCRetPrev|vRetPrev|`
 
-X04|CNPJ|
+`X|modFrete|`
 
-X05|CPF|
+`X03|xNome|IE|xEnder|xMun|UF|`
 
-X11|vServ|vBCRet|pICMSRet|vICMSRet|CFOP|cMunFG|
+`X04|CNPJ|`
 
-X18|placa|UF|RNTC|
+`X05|CPF|`
 
-X22|placa|UF|RNTC|
+`X11|vServ|vBCRet|pICMSRet|vICMSRet|CFOP|cMunFG|`
 
-X25a|vagao|
+`X18|placa|UF|RNTC|`
 
-X25b|balsa|
+`X22|placa|UF|RNTC|`
 
-X26|qVol|esp|marca|nVol|pesoL|pesoB|
+`X25a|vagao|`
 
-X33|nLacre|
+`X25b|balsa|`
 
-Y|
+`X26|qVol|esp|marca|nVol|pesoL|pesoB|`
 
-Y02|nFat|vOrig|vDesc|vLiq|
+`X33|nLacre|`
 
-Y07|nDup|dVenc|vDup|
+**`Y|`**
 
-YA|vTroco|
+`Y02|nFat|vOrig|vDesc|vLiq|`
 
-YA01|indPag|tPag|vPag|
+`Y07|nDup|dVenc|vDup|`
 
-YA04|tpIntegra|CNPJ|tBand|cAut|
+**`YA|vTroco|`**
 
-Z|infAdFisco|infCpl|
+**`YA01|indPag|tPag|vPag|`**
 
-Z04|xCampo|xTexto|
+**`YA04|tpIntegra|CNPJ|tBand|cAut|`**
 
-Z07|xCampo|xTexto|
+`Z|infAdFisco|infCpl|`
 
-Z10|nProc|indProc|
+`Z04|xCampo|xTexto|`
 
-ZA|UFSaidaPais|xLocExporta|xLocDespacho|
+`Z07|xCampo|xTexto|`
 
-ZB|xNEmp|xPed|xCont|
+`Z10|nProc|indProc|`
 
-ZC|safra|ref|qTotMes|qTotAnt|qTotGer|vFor|vTotDed|vLiqFor|
+`ZA|UFSaidaPais|xLocExporta|xLocDespacho|`
 
-ZC04|dia|qtde|
+`ZB|xNEmp|xPed|xCont|`
 
-ZC10|xDed|vDed|
+`ZC|safra|ref|qTotMes|qTotAnt|qTotGer|vFor|vTotDed|vLiqFor|`
 
-ZX01|qrcode|urlChave|
-```
+`ZC04|dia|qtde|`
+
+`ZC10|xDed|vDed|`
+
+`ZX01|qrcode|urlChave|`
+

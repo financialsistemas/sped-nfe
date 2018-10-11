@@ -24,6 +24,8 @@ Framework para geração e comunicação das NFe com as SEFAZ autorizadoras, e v
  
 > *01/10/2018 – Fim da concomitância com a versão 1.00 do QR Code (a versão 4.00 do XML da NFC-e aceitará somente a versão 2.00 do QR Code)* 
 
+## TODO: A conversão com o PADRÂO SEBRAE ainda está incompleta!!
+
 
 *Utilize o chat do Gitter para iniciar discussões específicas sobre o desenvolvimento deste pacote.*
 
@@ -50,8 +52,6 @@ Framework para geração e comunicação das NFe com as SEFAZ autorizadoras, e v
 - MG inicia o projeto em 2018 (sem previsão)
 - No caso do CE ainda estamos no aguardo de mais esclarecimentos.(vai ?? não vai ??)
 - E SC não participa.
-
-
 
 
 Este pacote é aderente com os [PSR-1], [PSR-2] e [PSR-4]. Se você observar negligências de conformidade, por favor envie um patch via pull request.
@@ -98,7 +98,7 @@ composer require nfephp-org/sped-nfe:dev-master
 
 Para que este pacote possa funcionar são necessários os seguintes requisitos do PHP e outros pacotes dos quais esse depende.
 
-- PHP 5.6 ou PHP 7.x (recomendável PHP 7.x) 
+- PHP 7.x (recomendável PHP 7.2) 
 - ext-curl
 - ext-dom
 - ext-json
@@ -135,7 +135,7 @@ Agora que você sabe que NAMESPACES é requerido, o uso correto para o exemplo a
 // VENDOR_DIR = pasta vendor da sua instalação composer
 require VENDOR_DIR . 'autoload.php';
 
-use namespace NFePHP\NFe\Make;
+use NFePHP\NFe\Make;
 
 $nfe = new Make();
 ```
