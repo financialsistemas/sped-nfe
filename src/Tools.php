@@ -171,10 +171,11 @@ class Tools extends ToolsCommon
      * @param int $nFin
      * @param string $xJust
      * @param int $tpAmb
+     * @param string $ano
      * @return string
      * @throws InvalidArgumentException
      */
-    public function sefazInutiliza($nSerie, $nIni, $nFin, $xJust, $tpAmb = null)
+    public function sefazInutiliza($nSerie, $nIni, $nFin, $xJust, $tpAmb = null, $ano = null)
     {
         if (empty($nIni) || empty($nFin) || empty($xJust)) {
             throw new InvalidArgumentException('Inutilizacao: parametros incompletos!');
@@ -188,7 +189,10 @@ class Tools extends ToolsCommon
         //carrega serviço
         $this->servico($servico, $this->config->siglaUF, $tpAmb);
         $cnpj = $this->config->cnpj;
-        $strAno = (string) date('y');
+        $strAno = $ano;
+        if (empty($ano)) {
+            $strAno = (string) date('y');
+        }
         $strSerie = str_pad($nSerie, 3, '0', STR_PAD_LEFT);
         $strInicio = str_pad($nIni, 9, '0', STR_PAD_LEFT);
         $strFinal = str_pad($nFin, 9, '0', STR_PAD_LEFT);
@@ -267,7 +271,9 @@ class Tools extends ToolsCommon
             . "<infCons>"
             . "<xServ>CONS-CAD</xServ>"
             . "<UF>$uf</UF>"
-            . "$filter</infCons></ConsCad>";
+            . "$filter"
+            . "</infCons>"
+            . "</ConsCad>";
         $this->isValid($this->urlVersion, $request, 'consCad');
         $this->lastRequest = $request;
         $parameters = ['nfeDadosMsg' => $request];
@@ -298,8 +304,10 @@ class Tools extends ToolsCommon
         $this->checkContingencyForWebServices($servico);
         $this->servico($servico, $uf, $tpAmb, $ignoreContingency);
         $request = "<consStatServ xmlns=\"$this->urlPortal\" versao=\"$this->urlVersion\">"
-            . "<tpAmb>$tpAmb</tpAmb><cUF>$this->urlcUF</cUF>"
-            . "<xServ>STATUS</xServ></consStatServ>";
+            . "<tpAmb>$tpAmb</tpAmb>"
+            . "<cUF>$this->urlcUF</cUF>"
+            . "<xServ>STATUS</xServ>"
+            . "</consStatServ>";
         $this->isValid($this->urlVersion, $request, 'consStatServ');
         $this->lastRequest = $request;
         $parameters = ['nfeDadosMsg' => $request];
@@ -323,6 +331,7 @@ class Tools extends ToolsCommon
         $this->checkContingencyForWebServices($servico);
         $this->servico($servico, $fonte, $this->tpAmb, true);
         $cUF = UFList::getCodeByUF($this->config->siglaUF);
+        $cnpj = $this->config->cnpj;
         $ultNSU = str_pad($ultNSU, 15, '0', STR_PAD_LEFT);
         $tagNSU = "<distNSU><ultNSU>$ultNSU</ultNSU></distNSU>";
         if ($numNSU != 0) {
@@ -332,8 +341,14 @@ class Tools extends ToolsCommon
         //monta a consulta
         $consulta = "<distDFeInt xmlns=\"$this->urlPortal\" versao=\"$this->urlVersion\">"
             . "<tpAmb>".$this->tpAmb."</tpAmb>"
-            . "<cUFAutor>$cUF</cUFAutor>"
-            . "<CNPJ>".$this->config->cnpj."</CNPJ>$tagNSU</distDFeInt>";
+            . "<cUFAutor>$cUF</cUFAutor>";
+        if ($this->typePerson === 'J') {
+            $consulta .= "<CNPJ>$cnpj</CNPJ>";
+        } else {
+            $consulta .= "<CPF>$cnpj</CPF>";
+        }
+        $consulta .= "$tagNSU"
+            . "</distDFeInt>";
         //valida o xml da requisição
         $this->isValid($this->urlVersion, $consulta, 'distDFeInt');
         $this->lastRequest = $consulta;
@@ -570,9 +585,13 @@ class Tools extends ToolsCommon
             $request = "<evento xmlns=\"$this->urlPortal\" versao=\"$this->urlVersion\">"
                 . "<infEvento Id=\"$eventId\">"
                 . "<cOrgao>$cOrgao</cOrgao>"
-                . "<tpAmb>$this->tpAmb</tpAmb>"
-                . "<CNPJ>$cnpj</CNPJ>"
-                . "<chNFe>$evt->chave</chNFe>"
+                . "<tpAmb>$this->tpAmb</tpAmb>";
+            if ($this->typePerson === 'J') {
+                $request .= "<CNPJ>$cnpj</CNPJ>";
+            } else {
+                $request .= "<CPF>$cnpj</CPF>";
+            }
+            $request .= "<chNFe>$evt->chave</chNFe>"
                 . "<dhEvento>$dhEvento</dhEvento>"
                 . "<tpEvento>$evt->tpEvento</tpEvento>"
                 . "<nSeqEvento>$evt->nSeqEvento</nSeqEvento>"
@@ -583,7 +602,6 @@ class Tools extends ToolsCommon
                 . "</detEvento>"
                 . "</infEvento>"
                 . "</evento>";
-        
             //assinatura dos dados
             $request = Signer::sign(
                 $this->certificate,
@@ -714,9 +732,13 @@ class Tools extends ToolsCommon
         $request = "<evento xmlns=\"$this->urlPortal\" versao=\"$this->urlVersion\">"
             . "<infEvento Id=\"$eventId\">"
             . "<cOrgao>$cOrgao</cOrgao>"
-            . "<tpAmb>$this->tpAmb</tpAmb>"
-            . "<CNPJ>$cnpj</CNPJ>"
-            . "<chNFe>$chave</chNFe>"
+            . "<tpAmb>$this->tpAmb</tpAmb>";
+        if ($this->typePerson === 'J') {
+            $request .= "<CNPJ>$cnpj</CNPJ>";
+        } else {
+            $request .= "<CPF>$cnpj</CPF>";
+        }
+        $request .= "<chNFe>$chave</chNFe>"
             . "<dhEvento>$dhEvento</dhEvento>"
             . "<tpEvento>$tpEvento</tpEvento>"
             . "<nSeqEvento>$nSeqEvento</nSeqEvento>"
@@ -769,16 +791,23 @@ class Tools extends ToolsCommon
         $this->servico($servico, 'AN', $this->tpAmb, true);
         $cUF = UFList::getCodeByUF($this->config->siglaUF);
         $tagChave = "<consChNFe><chNFe>$chave</chNFe></consChNFe>";
+        $cnpj = $this->config->cnpj;
         //monta a consulta
-        $consulta = "<distDFeInt xmlns=\"$this->urlPortal\" versao=\"$this->urlVersion\">"
+        $request = "<distDFeInt xmlns=\"$this->urlPortal\" versao=\"$this->urlVersion\">"
             . "<tpAmb>".$this->tpAmb."</tpAmb>"
-            . "<cUFAutor>$cUF</cUFAutor>"
-            . "<CNPJ>".$this->config->cnpj."</CNPJ>$tagChave</distDFeInt>";
+            . "<cUFAutor>$cUF</cUFAutor>";
+        if ($this->typePerson === 'J') {
+            $request .= "<CNPJ>$cnpj</CNPJ>";
+        } else {
+            $request .= "<CPF>$cnpj</CPF>";
+        }
+        $request .= "$tagChave"
+            . "</distDFeInt>";
         //valida o xml da requisição
-        $this->isValid($this->urlVersion, $consulta, 'distDFeInt');
-        $this->lastRequest = $consulta;
+        $this->isValid($this->urlVersion, $request, 'distDFeInt');
+        $this->lastRequest = $request;
         //montagem dos dados da mensagem SOAP
-        $request = "<nfeDadosMsg xmlns=\"$this->urlNamespace\">$consulta</nfeDadosMsg>";
+        $request = "<nfeDadosMsg xmlns=\"$this->urlNamespace\">$request</nfeDadosMsg>";
         $parameters = ['nfeDistDFeInteresse' => $request];
         $body = "<nfeDistDFeInteresse xmlns=\"$this->urlNamespace\">"
             . $request
