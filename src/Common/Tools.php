@@ -7,7 +7,7 @@ namespace NFePHP\NFe\Common;
  *
  * @category  NFePHP
  * @package   NFePHP\NFe\Common\Tools
- * @copyright NFePHP Copyright (c) 2008-2017
+ * @copyright NFePHP Copyright (c) 2008-2019
  * @license   http://www.gnu.org/licenses/lgpl.txt LGPLv3+
  * @license   https://opensource.org/licenses/MIT MIT
  * @license   http://www.gnu.org/licenses/gpl.txt GPLv3+
@@ -180,9 +180,13 @@ class Tools
      * and instanciate Contingency::class
      * @param string $configJson content of config in json format
      * @param Certificate $certificate
+     * @param Contingency $contingency
      */
-    public function __construct($configJson, Certificate $certificate)
-    {
+    public function __construct(
+        $configJson,
+        Certificate $certificate,
+        Contingency $contingency = null
+    ) {
         $this->pathwsfiles = realpath(__DIR__ . '/../../storage') . '/';
         //valid config json string
         $this->config = Config::validate($configJson);
@@ -191,10 +195,12 @@ class Tools
         $this->certificate = $certificate;
         $this->typePerson = $this->getTypeOfPersonFromCertificate();
         $this->setEnvironment($this->config->tpAmb);
-        $this->contingency = new Contingency();
+        if (empty($contingency)) {
+            $this->contingency = new Contingency();
+        }
         $this->soap = new SoapCurl($certificate);
     }
-    
+
     /**
      * Sets environment time zone
      * @param string $acronym (ou seja a sigla do estado)
@@ -204,7 +210,7 @@ class Tools
     {
         date_default_timezone_set(TimeZoneByUF::get($acronym));
     }
-    
+
     /**
      * Return J or F from existing type in ASN.1 certificate
      * J - pessoa juridica (CNPJ)
@@ -213,11 +219,11 @@ class Tools
      */
     public function getTypeOfPersonFromCertificate()
     {
-        $cnpj = $this->certificate->getCNPJ();
+        $cnpj = $this->certificate->getCnpj();
         $type = 'J';
         if (substr($cnpj, 0, 1) === 'N') {
             //não é CNPJ, então verificar se é CPF
-            $cpf = $this->certificate->getCPF();
+            $cpf = $this->certificate->getCpf();
             if (substr($cpf, 0, 1) !== 'N') {
                 $type = 'F';
             } else {
@@ -228,7 +234,7 @@ class Tools
         }
         return $type;
     }
-    
+
     /**
      * Set application version
      * @param string $ver
@@ -250,7 +256,7 @@ class Tools
         $this->soap = $soap;
         $this->soap->loadCertificate($this->certificate);
     }
-    
+
     /**
      * Set OPENSSL Algorithm using OPENSSL constants
      * @param int $algorithm
@@ -273,7 +279,7 @@ class Tools
         }
         return $this->modelo;
     }
-    
+
     /**
      * Set or get parameter layout version
      * @param string $version
@@ -289,16 +295,16 @@ class Tools
         if (false === isset($this->availableVersions[$version])) {
             throw new \InvalidArgumentException('Essa versão de layout não está disponível');
         }
-        
+
         $this->versao = $version;
         $this->config->schemes = $this->availableVersions[$version];
         $this->pathschemes = realpath(
             __DIR__ . '/../../schemes/'. $this->config->schemes
         ).'/';
-        
+
         return $this->versao;
     }
-    
+
     /**
      * Recover cUF number from state acronym
      * @param string $acronym Sigla do estado
@@ -308,7 +314,7 @@ class Tools
     {
         return UFlist::getCodeByUF($acronym);
     }
-    
+
     /**
      * Recover state acronym from cUF number
      * @param int $cUF
@@ -318,7 +324,7 @@ class Tools
     {
         return UFlist::getUFByCode($cUF);
     }
-    
+
     /**
      * Validate cUF from the key content and returns the state acronym
      * @param string $chave
@@ -335,7 +341,7 @@ class Tools
         }
         return $uf;
     }
-    
+
     /**
      * Sign NFe or NFCe
      * @param  string  $xml NFe xml content
@@ -373,7 +379,7 @@ class Tools
         $this->isValid($this->versao, $signed, 'nfe');
         return $signed;
     }
-    
+
     /**
      * Corrects NFe fields when in contingency mode
      * @param string $xml NFe xml content
@@ -400,7 +406,7 @@ class Tools
         }
         return Validator::isValid($body, $schema);
     }
-    
+
     /**
      * Verifies the existence of the service
      * @param string $service
@@ -412,7 +418,7 @@ class Tools
             55 => ['SVCAN', 'SVCRS', 'EPEC', 'FSDA'],
             65 => ['FSDA', 'EPEC', 'OFFLINE']
         ];
-        
+
         $type = $this->contingency->type;
         $mod = $this->modelo;
         if (!empty($type)) {
@@ -423,7 +429,7 @@ class Tools
                 );
             }
         }
-        
+
         //se a contingencia é OFFLINE ou FSDA nenhum servidor está disponivel
         //se a contigencia EPEC está ativa apenas o envio de Lote está ativo,
         //então gerar um RunTimeException
@@ -438,7 +444,7 @@ class Tools
             );
         }
     }
-    
+
     /**
      * Alter environment from "homologacao" to "producao" and vice-versa
      * @param int $tpAmb
@@ -451,7 +457,7 @@ class Tools
             $this->ambiente = ($tpAmb == 1) ? 'producao' : 'homologacao';
         }
     }
-    
+
     /**
      * Set option for canonical transformation see C14n
      * @param array $opt
@@ -464,7 +470,7 @@ class Tools
         }
         return $this->canonical;
     }
-    
+
     /**
      * Assembles all the necessary parameters for soap communication
      * @param string $service
@@ -501,15 +507,21 @@ class Tools
         $this->urlHeader = Header::get($this->urlNamespace, $this->urlcUF, $this->urlVersion);
         $this->urlAction = "\"$this->urlNamespace/$this->urlMethod\"";
     }
-    
+
     /**
      * Send request message to webservice
      * @param array $parameters
      * @param string $request
      * @return string
+     * @throws RuntimeException
      */
     protected function sendRequest($request, array $parameters = [])
     {
+        if ($this->contingency->tpEmis == 5 || $this->contingency->tpEmis == 9) {
+            throw new \RuntimeException(
+                'Em contingencia FSDA ou OFFLINE não é possivel fazer envios à webservices.'
+            );
+        }
         $this->checkSoap();
         return (string) $this->soap->send(
             $this->urlService,
@@ -522,7 +534,7 @@ class Tools
             $this->objHeader
         );
     }
-    
+
     /**
      * Recover path to xml data base with list of soap services
      * @return string
@@ -538,7 +550,7 @@ class Tools
         }
         return file_get_contents($file);
     }
-    
+
     /**
      * Add QRCode Tag to signed XML from a NFCe
      * @param DOMDocument $dom
@@ -579,7 +591,7 @@ class Tools
         $std = json_decode(json_encode($arr[$tpAmb]));
         return $std->$uf;
     }
-    
+
     /**
      * Verify if SOAP class is loaded, if not, force load SoapCurl
      */
