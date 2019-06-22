@@ -4,10 +4,10 @@ namespace NFePHP\NFe\Factories;
 
 /**
  * Classe de conversão do TXT para XML
- *
+ * NOTA: ajustado para Nota Técnica 2018.005 Versão 1.00 – Dezembro de 2018
  * @category  API
  * @package   NFePHP\NFe
- * @copyright NFePHP Copyright (c) 2008-2018
+ * @copyright NFePHP Copyright (c) 2008-2019
  * @license   http://www.gnu.org/licenses/lgpl.txt LGPLv3+
  * @license   https://opensource.org/licenses/MIT MIT
  * @license   http://www.gnu.org/licenses/gpl.txt GPLv3+
@@ -21,9 +21,10 @@ use stdClass;
 
 class Parser
 {
-    const LOCAL="LOCAL";
-    const SEBRAE="SEBRAE";
-    
+    const LOCAL = "LOCAL";
+    const LOCAL_V12 = "LOCAL_V12";
+    const SEBRAE = "SEBRAE";
+
     /**
      * @var array
      */
@@ -116,6 +117,8 @@ class Parser
         $comp = "";
         if ($baselayout === 'SEBRAE') {
             $comp = "_sebrae";
+        } elseif ($baselayout == 'LOCAL_V12') {
+            $comp = "_v1.2";
         }
         $this->baselayout = $baselayout;
         $path = realpath(__DIR__."/../../storage/txtstructure$ver" . $comp . ".json");
@@ -135,6 +138,15 @@ class Parser
             return $this->make->getXML();
         }
         return null;
+    }
+
+    /**
+     * Retorna erros na criacao do DOM
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->make->erros;
     }
 
     /**
@@ -345,7 +357,7 @@ class Parser
         $this->buildCEntity();
         $this->stdEmit = null;
     }
-    
+
     protected function dEntity($std)
     {
         //nada
@@ -446,15 +458,17 @@ class Parser
 
     /**
      * Load fields for tag retirada [F]
-     * F|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|
+     * F|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|CEP|cPais|xPais|fone|email|IE|
      * @param stdClass $std
      * @return void
      */
     protected function fEntity($std)
     {
+        $this->stdRetirada = null;
         $this->stdRetirada = $std;
         $this->stdRetirada->CNPJ = null;
         $this->stdRetirada->CPF = null;
+        $this->stdRetirada->xNome = null;
     }
 
     /**
@@ -467,7 +481,6 @@ class Parser
     {
         $this->stdRetirada->CNPJ = $std->CNPJ;
         $this->buildFEntity();
-        $this->stdRetirada = null;
     }
 
     /**
@@ -480,7 +493,18 @@ class Parser
     {
         $this->stdRetirada->CPF = $std->CPF;
         $this->buildFEntity();
-        $this->stdRetirada = null;
+    }
+    
+    /**
+     * Create tag retirada [F02b], with xNome belongs to [F]
+     * F02a|xNome|
+     * @param stdClass $std
+     * @return void
+     */
+    protected function f02bEntity($std)
+    {
+        $this->stdRetirada->xNome = $std->xNome;
+        $this->buildFEntity();
     }
 
     /**
@@ -494,15 +518,17 @@ class Parser
 
     /**
      * Load fields for tag entrega [G]
-     * G|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|
+     * G|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|CEP|cPais|xPais|fone|email|IE|
      * @param stdClass $std
      * @return void
      */
     protected function gEntity($std)
     {
+        $this->stdEntrega = null;
         $this->stdEntrega = $std;
         $this->stdEntrega->CNPJ = null;
         $this->stdEntrega->CPF = null;
+        $this->stdEntrega->xNome = null;
     }
 
     /**
@@ -515,7 +541,6 @@ class Parser
     {
         $this->stdEntrega->CNPJ = $std->CNPJ;
         $this->buildGEntity();
-        $this->stdEntrega = null;
     }
 
     /**
@@ -528,8 +553,20 @@ class Parser
     {
         $this->stdEntrega->CPF = $std->CPF;
         $this->buildGEntity();
-        $this->stdEntrega = null;
     }
+    
+    /**
+     * Create tag entrega [G02b], with xNome belongs to [G]
+     * G02b|xNome|
+     * @param stdClass $std
+     * @return void
+     */
+    protected function g02bEntity($std)
+    {
+        $this->stdEntrega->xNome = $std->xNome;
+        $this->buildGEntity();
+    }
+    
 
     /**
      * Create tag entrega [G]
@@ -683,7 +720,7 @@ class Parser
         $std->item = $this->item;
         $this->make->tagdetExportInd($std);
     }
-    
+
     /**
      * Create tag RASTRO [I80]
      * I80|nLote|qLote|dFab|dVal|cAgreg|
@@ -710,7 +747,7 @@ class Parser
 
     /**
      * Create tag med [K]
-     * K|cProdANVISA|vPMC|
+     * K|cProdANVISA|vPMC|xMotivoIsencao|
      * @param stdClass $std
      * @return void
      */
@@ -722,6 +759,7 @@ class Parser
         $std->dFab = !empty($std->dFab) ? $std->dFab : null;
         $std->dVal = !empty($std->dVal) ? $std->dVal : null;
         $std->cProdANVISA = !empty($std->cProdANVISA) ? $std->cProdANVISA : null;
+        $std->xMotivoIsencao = !empty($std->xMotivoIsencao) ? $std->xMotivoIsencao : null;
         $this->make->tagmed($std);
     }
 
@@ -807,7 +845,7 @@ class Parser
     {
         //create tag comb [LA]
         $this->buildLAEntity();
-        
+
         $std->item = $this->item;
         $this->make->tagimposto($std);
     }
@@ -949,7 +987,7 @@ class Parser
 
     /**
      * Create tag ICMSST [N10b]
-     * N10b|orig|CST|vBCSTRet|vICMSSTRet|vBCSTDest|vICMSSTDest|
+     * N10b|orig|CST|vBCSTRet|vICMSSTRet|vBCSTDest|vICMSSTDest|vBCFCPSTRet|pFCPSTRet|vFCPSTRet|
      * @param stdClass $std
      * @return void
      */
@@ -1523,15 +1561,15 @@ class Parser
     {
         $this->make->tagICMSTot($std);
     }
-    
+
     protected function w04cEntity($std)
     {
     }
-    
+
     protected function w04eEntity($std)
     {
     }
-    
+
     protected function w04gEntity($std)
     {
     }
@@ -1663,7 +1701,7 @@ class Parser
     {
         $this->make->tagbalsa($std);
     }
-    
+
     /**
      * Create tag vol [X26], belongs to [X]
      * X26|qVol|esp|marca|nVol|pesoL|pesoB|
@@ -1713,7 +1751,7 @@ class Parser
             $this->make->tagpag($std);
         }
     }
-    
+
     /**
      * Create tag fat [Y02]
      * Y02|nFat|vOrig|vDesc|vLiq|
@@ -1752,7 +1790,7 @@ class Parser
             $this->make->tagdetPag($std);
         }
     }
-    
+
     /**
      * Creates tag detPag and card [YA]
      * SEBRAE
@@ -1763,7 +1801,7 @@ class Parser
     {
         $this->make->tagdetPag($std);
     }
-    
+
 
 
     /**
@@ -1863,6 +1901,17 @@ class Parser
     protected function zc10Entity($std)
     {
         $this->make->tagdeduc($std);
+    }
+    
+    /**
+     * Create tag infRespTec [ZD01]
+     * ZD|CNPJ|xContato|email|fone|CSRTidCSRT|
+     * @param stdClass $std
+     * @return void
+     */
+    protected function zdEntity($std)
+    {
+        $this->make->taginfRespTec($std);
     }
 
     /**

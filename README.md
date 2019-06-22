@@ -2,7 +2,7 @@
 
 Framework para geração e comunicação das NFe com as SEFAZ autorizadoras, e visa fornecer os meios para gerar, assinar e anviar os dados relativos ao projeto Sped NFe das SEFAZ.
 
-## TODO: A conversão com o PADRÂO SEBRAE ainda está incompleta!!
+## TODO: A conversão com o PADRÃO SEBRAE ainda está incompleta!!
 
 *Utilize o chat do Gitter para iniciar discussões específicas sobre o desenvolvimento deste pacote.*
 
@@ -24,11 +24,9 @@ Framework para geração e comunicação das NFe com as SEFAZ autorizadoras, e v
 
 ### NFe (modelo 55) TODOS
 
-### NFCe (modelo 65) Todos, menos MG, CE e SC
+### NFCe (modelo 65) Todos, menos SC 
 
-- MG inicia o projeto em 2018 (sem previsão)
-- No caso do CE ainda estamos no aguardo de mais esclarecimentos.(vai ?? não vai ??)
-- E SC não participa.
+- SC ainda não participa (previsão de uso em 2020, com Gadget Fiscal tipo SAT@ECF de SP).
 
 ### NFe com eCPF (emissor pessoa física)
 

@@ -8,7 +8,7 @@ namespace NFePHP\NFe;
  *
  * @category  NFePHP
  * @package   NFePHP\NFe\Tools
- * @copyright NFePHP Copyright (c) 2008-2017
+ * @copyright NFePHP Copyright (c) 2008-2019
  * @license   http://www.gnu.org/licenses/lgpl.txt LGPLv3+
  * @license   https://opensource.org/licenses/MIT MIT
  * @license   http://www.gnu.org/licenses/gpl.txt GPLv3+
@@ -31,6 +31,7 @@ class Tools extends ToolsCommon
     const EVT_NAO_REALIZADA = 210240; //only one per nfe but seq=n
     const EVT_CCE = 110110; //many seq=n
     const EVT_CANCELA = 110111; //only seq=1
+    const EVT_CANCELASUBSTITUICAO = 110112;
     const EVT_EPEC = 110140; //only seq=1
 
     /**
@@ -277,6 +278,13 @@ class Tools extends ToolsCommon
         $this->isValid($this->urlVersion, $request, 'consCad');
         $this->lastRequest = $request;
         $parameters = ['nfeDadosMsg' => $request];
+        if ($this->urlVersion === '2.00') {
+            $this->objHeader = new \SOAPHeader(
+                $this->urlNamespace,
+                'nfeCabecMsg',
+                ['cUF' => $this->urlcUF, 'versaoDados' => $this->urlVersion]
+            );
+        }
         $body = "<nfeDadosMsg xmlns=\"$this->urlNamespace\">$request</nfeDadosMsg>";
         $this->lastResponse = $this->sendRequest($body, $parameters);
         return $this->lastResponse;
@@ -434,7 +442,7 @@ class Tools extends ToolsCommon
             $tagAdic
         );
     }
-    
+
     /**
      * Request the cancellation of the request for an extension of the term
      * of return of products of an NF-e of consignment for industrialization
@@ -465,7 +473,7 @@ class Tools extends ToolsCommon
                 . "<nProt>$nProt</nProt>";
         return $this->sefazEvento($uf, $chave, $tpEvento, $nSeqEvento, $tagAdic);
     }
-    
+
     /**
      * Requires nfe cancellation
      * @param  string $chave key of NFe
@@ -487,6 +495,45 @@ class Tools extends ToolsCommon
     }
 
     /**
+     * Requires nfe cancellation by substitution
+     * @param  string $chave key of NFe
+     * @param  string $xJust justificative 255 characters max
+     * @param  string $nProt protocol number
+     * @param  string $chNFeRef key of New NFe
+     * @param  string $verAplic version of applicative
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    public function sefazCancelaPorSubstituicao($chave, $xJust, $nProt, $chNFeRef, $verAplic)
+    {
+        if ($this->modelo != 65) {
+            throw new InvalidArgumentException(
+                'Cancelamento pro Substituição deve ser usado apenas para '
+                . 'operações com modelo 65 NFCe'
+            );
+        }
+        if (empty($chave) || empty($xJust) || empty($nProt)
+            || empty($chNFeRef) || empty($verAplic)) {
+            throw new InvalidArgumentException(
+                'CancelamentoPorSubs: chave da NFCe cancelada, justificativa, '
+                . 'protocolo, chave da NFCe substituta, ou versão do aplicativo '
+                . 'emissor não podem ser vazios!'
+            );
+        }
+        $uf = $this->validKeyByUF($chave);
+        $xJust = Strings::replaceUnacceptableCharacters(substr(trim($xJust), 0, 255));
+        $nSeqEvento = 1;
+        $cOrgao = substr($chave, 0, 2);
+        $tagAdic = "<cOrgaoAutor>$cOrgao</cOrgaoAutor>"
+            . "<tpAutor>1</tpAutor>"
+            . "<verAplic>$verAplic</verAplic>"
+            . "<nProt>$nProt</nProt>"
+            . "<xJust>$xJust</xJust>"
+            . "<chNFeRef>$chNFeRef</chNFeRef>";
+        return $this->sefazEvento($uf, $chave, self::EVT_CANCELASUBSTITUICAO, $nSeqEvento, $tagAdic);
+    }
+    
+    /**
      * Request the registration of the manifestation of recipient
      * @param string $chave
      * @param int $tpEvento
@@ -507,7 +554,7 @@ class Tools extends ToolsCommon
         }
         return $this->sefazEvento('AN', $chave, $tpEvento, $nSeqEvento, $tagAdic);
     }
-    
+
     /**
      * Request the registration of the manifestation of recipient in batch
      * @param \stdClass $std
@@ -549,7 +596,7 @@ class Tools extends ToolsCommon
         }
         return $this->sefazEventoLote('AN', $evt);
     }
-    
+
     /**
      * Send event to SEFAZ in batch
      * @param string $uf
@@ -697,7 +744,7 @@ class Tools extends ToolsCommon
             . "<vICMS>$vICMS</vICMS>"
             . "<vST>$vST</vST>"
             . "</dest>";
-    
+
         return $this->sefazEvento('AN', $chNFe, self::EVT_EPEC, $nSeqEvento, $tagAdic);
     }
 
@@ -723,7 +770,7 @@ class Tools extends ToolsCommon
         $this->servico($servico, $uf, $this->tpAmb, $ignore);
         $ev = $this->tpEv($tpEvento);
         $descEvento = $ev->desc;
-        $cnpj = $this->config->cnpj;
+        $cnpj = isset($this->config->cnpj) ? $this->config->cnpj : '';
         $dt = new \DateTime();
         $dhEvento = $dt->format('Y-m-d\TH:i:sP');
         $sSeqEvento = str_pad($nSeqEvento, 2, "0", STR_PAD_LEFT);
@@ -766,6 +813,7 @@ class Tools extends ToolsCommon
             . "</envEvento>";
         $this->isValid($this->urlVersion, $request, 'envEvento');
         $this->lastRequest = $request;
+        //return $request;
         $parameters = ['nfeDadosMsg' => $request];
         $body = "<nfeDadosMsg xmlns=\"$this->urlNamespace\">$request</nfeDadosMsg>";
         $this->lastResponse = $this->sendRequest($body, $parameters);
@@ -937,6 +985,10 @@ class Tools extends ToolsCommon
             case self::EVT_CANCELA:
                 $std->alias = 'CancNFe';
                 $std->desc = 'Cancelamento';
+                break;
+            case self::EVT_CANCELASUBSTITUICAO:
+                $std->alias = 'CancNFe';
+                $std->desc = 'Cancelamento por substituicao';
                 break;
             case self::EVT_EPEC: // Emissão em contingência EPEC
                 $std->alias = 'EPEC';
