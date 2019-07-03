@@ -5433,7 +5433,7 @@ class Make
         $this->dom->addChild(
             $impostoDevol,
             "pDevol",
-            $this->conditionalNumberFormatting($std->pDevol, 4),
+            $this->conditionalNumberFormatting($std->pDevol, 2),
             true,
             "[item $std->item] Percentual da mercadoria devolvida"
         );
@@ -5441,7 +5441,7 @@ class Make
         $this->dom->addChild(
             $parent,
             "vIPIDevol",
-            $this->conditionalNumberFormatting($std->vIPIDevol),
+            $this->conditionalNumberFormatting($std->vIPIDevol, 2),
             true,
             "[item $std->item] Valor do IPI devolvido"
         );
