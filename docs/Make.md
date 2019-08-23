@@ -81,8 +81,8 @@ $std->tpAmb = 2;
 $std->finNFe = 1;
 $std->indFinal = 0;
 $std->indPres = 0;
-$std->procEmi = '3.10.31';
-$std->verProc = null;
+$std->procEmi = 0;
+$std->verProc = '3.10.31';
 $std->dhCont = null;
 $std->xJust = null;
 
@@ -832,6 +832,8 @@ $nfe->tagICMSUFDest($std);
 
 ### function tagIPI($std):DOMElement
 Node referente ao IPI do item da NFe
+
+> NOTA: clEnq foi removido do layout 4.00 na NT_2016_V1.40
 
 | Parâmetro | Tipo | Descrição |
 | :--- | :---: | :--- |
