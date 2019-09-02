@@ -541,7 +541,7 @@ class Make
         $this->dom->addChild(
             $ide,
             "natOp",
-            substr(trim($std->natOp), 0, 60),
+            mb_substr(trim($std->natOp), 0, 60),
             true,
             $identificador . "Descrição da Natureza da Operação"
         );
@@ -4421,7 +4421,7 @@ class Make
                 $this->dom->addChild(
                     $icmsSN,
                     'vBCFCPSTRet',
-                    $this->conditionalNumberFormatting($std->vBCFCPSTRet, 2),
+                    $this->conditionalNumberFormatting($std->vBCFCPSTRet, 4),
                     isset($std->vBCFCPSTRet) ? true : false,
                     "[item $std->item] Valor da Base de Cálculo do FCP "
                     . "retido anteriormente por Substituição Tributária"
