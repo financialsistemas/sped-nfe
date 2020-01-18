@@ -381,7 +381,11 @@ class Make
      */
     public function monta()
     {
-        $this->errors = $this->dom->errors;
+        if (!empty($this->errors)) {
+            $this->errors = array_merge($this->errors, $this->dom->errors);
+        } else {
+            $this->errors = $this->dom->errors;
+        }
         //cria a tag raiz da Nfe
         $this->buildNFe();
         //processa nfeRef e coloca as tags na tag ide
@@ -1715,8 +1719,18 @@ class Make
         $cean = !empty($std->cEAN) ? trim(strtoupper($std->cEAN)) : '';
         $ceantrib = !empty($std->cEANTrib) ? trim(strtoupper($std->cEANTrib)) : '';
         //throw exception if not is Valid
-        Gtin::isValid($cean);
-        Gtin::isValid($ceantrib);
+        try {
+            Gtin::isValid($cean);
+        } catch (\InvalidArgumentException $e) {
+            $this->errors[] = "cEANT {$cean} " . $e->getMessage();
+        }
+        
+        try {
+            Gtin::isValid($ceantrib);
+        } catch (\InvalidArgumentException $e) {
+            $this->errors[] = "cEANTrib {$ceantrib} " . $e->getMessage();
+        }
+        
         $identificador = 'I01 <prod> - ';
         $prod = $this->dom->createElement("prod");
         $this->dom->addChild(
