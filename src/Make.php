@@ -28,7 +28,6 @@ use DateTime;
 
 class Make
 {
-
     /**
      * @var array
      */
@@ -5092,7 +5091,7 @@ class Make
                     $pisItem,
                     'vPIS',
                     $this->conditionalNumberFormatting($std->vPIS),
-                    true,
+                    ($std->vPIS !== null) ? true : false,
                     "[item $std->item] Valor do PIS"
                 );
                 //totalizador
@@ -6415,6 +6414,12 @@ class Make
         return $detPag;
     }
     
+    /**
+     * Dados do intermediador
+     *
+     * @param stdClass $std
+     * @return \DomElement
+     */
     public function tagIntermed(stdClass $std)
     {
         $possible = [
