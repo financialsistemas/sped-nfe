@@ -41,6 +41,10 @@ class Make
      */
     public $xml;
     /**
+     * @var stdClass
+     */
+    public $stdTot;
+    /**
      * @var string
      */
     protected $version;
@@ -272,10 +276,6 @@ class Make
      * @var array of DOMElements
      */
     protected $aProcRef = [];
-    /**
-     * @var stdClass
-     */
-    protected $stdTot;
     /**
      * @var DOMElement
      */
@@ -671,7 +671,7 @@ class Make
         $this->dom->addChild(
             $ide,
             "indIntermed",
-            $std->indIntermed ?? null,
+            isset($std->indIntermed) ? $std->indIntermed : null,
             false,
             $identificador . "Indicador de intermediador/marketplace"
         );
@@ -1162,9 +1162,11 @@ class Make
             }
         }
         $xNome = $std->xNome;
-        if ($this->tpAmb == '2') {
+        if ($this->tpAmb == '2' && !empty($xNome)) {
             $xNome = 'NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL';
             //a exigência do CNPJ 99999999000191 não existe mais
+        } elseif ($this->tpAmb == '2' && $this->mod == '65') {
+            $xNome = 'NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL';
         }
         if (!empty($std->CNPJ)) {
             $this->dom->addChild(
@@ -2799,14 +2801,14 @@ class Make
         $this->dom->addChild(
             $encerrante,
             "vEncIni",
-            $this->conditionalNumberFormatting($std->vEncIni),
+            $this->conditionalNumberFormatting($std->vEncIni, 3),
             true,
             "$identificador [item $std->item] Valor do Encerrante no início do abastecimento"
         );
         $this->dom->addChild(
             $encerrante,
             "vEncFin",
-            $this->conditionalNumberFormatting($std->vEncFin),
+            $this->conditionalNumberFormatting($std->vEncFin, 3),
             true,
             "$identificador [item $std->item] Valor do Encerrante no final do abastecimento"
         );
@@ -4009,6 +4011,7 @@ class Make
             'vICMSEfet'
         ];
         $std = $this->equilizeParameters($std, $possible);
+        $this->stdTot->vFCPSTRet += (float) !empty($std->vFCPSTRet) ? $std->vFCPSTRet : 0;
         $icmsST = $this->dom->createElement("ICMSST");
         $this->dom->addChild(
             $icmsST,
@@ -5059,34 +5062,37 @@ class Make
                     true,
                     "[item $std->item] Código de Situação Tributária do PIS"
                 );
-                $this->dom->addChild(
-                    $pisItem,
-                    'vBC',
-                    $this->conditionalNumberFormatting($std->vBC),
-                    ($std->vBC !== null) ? true : false,
-                    "[item $std->item] Valor da Base de Cálculo do PIS"
-                );
-                $this->dom->addChild(
-                    $pisItem,
-                    'pPIS',
-                    $this->conditionalNumberFormatting($std->pPIS, 4),
-                    ($std->pPIS !== null) ? true : false,
-                    "[item $std->item] Alíquota do PIS (em percentual)"
-                );
-                $this->dom->addChild(
-                    $pisItem,
-                    'qBCProd',
-                    $this->conditionalNumberFormatting($std->qBCProd, 4),
-                    ($std->qBCProd !== null) ? true : false,
-                    "[item $std->item] Quantidade Vendida"
-                );
-                $this->dom->addChild(
-                    $pisItem,
-                    'vAliqProd',
-                    $this->conditionalNumberFormatting($std->vAliqProd, 4),
-                    ($std->vAliqProd !== null) ? true : false,
-                    "[item $std->item] Alíquota do PIS (em reais)"
-                );
+                if (!isset($std->qBCProd)) {
+                    $this->dom->addChild(
+                        $pisItem,
+                        'vBC',
+                        $this->conditionalNumberFormatting($std->vBC),
+                        ($std->vBC !== null) ? true : false,
+                        "[item $std->item] Valor da Base de Cálculo do PIS"
+                    );
+                    $this->dom->addChild(
+                        $pisItem,
+                        'pPIS',
+                        $this->conditionalNumberFormatting($std->pPIS, 4),
+                        ($std->pPIS !== null) ? true : false,
+                        "[item $std->item] Alíquota do PIS (em percentual)"
+                    );
+                } else {
+                    $this->dom->addChild(
+                        $pisItem,
+                        'qBCProd',
+                        $this->conditionalNumberFormatting($std->qBCProd, 4),
+                        ($std->qBCProd !== null) ? true : false,
+                        "[item $std->item] Quantidade Vendida"
+                    );
+                    $this->dom->addChild(
+                        $pisItem,
+                        'vAliqProd',
+                        $this->conditionalNumberFormatting($std->vAliqProd, 4),
+                        ($std->vAliqProd !== null) ? true : false,
+                        "[item $std->item] Alíquota do PIS (em reais)"
+                    );
+                }
                 $this->dom->addChild(
                     $pisItem,
                     'vPIS',
@@ -6332,6 +6338,7 @@ class Make
      * Grupo de Formas de Pagamento YA01a pai YA01
      * NOTA: Ajuste NT_2016_002_v1.30
      * NOTA: Ajuste NT_2016_002_v1 51
+     * NOTA: Ajuste NT_2020_006
      * tag NFe/infNFe/pag/detPag
      * @param stdClass $std
      * @return DOMElement
@@ -6341,6 +6348,7 @@ class Make
         $possible = [
             'indPag',
             'tPag',
+            'xPag',
             'vPag',
             'CNPJ',
             'tBand',
@@ -6363,6 +6371,13 @@ class Make
             $std->tPag,
             true,
             "Forma de pagamento"
+        );
+        $this->dom->addChild(
+            $detPag,
+            "xPag",
+            !empty($std->xPag) ? $std->xPag : null,
+            false,
+            "Descricao da Forma de pagamento"
         );
         $this->dom->addChild(
             $detPag,
@@ -7092,34 +7107,37 @@ class Make
             true,
             "Código de Situação Tributária da COFINS"
         );
-        $this->dom->addChild(
-            $confinsoutr,
-            "vBC",
-            $this->conditionalNumberFormatting($std->vBC),
-            ($std->vBC !== null) ? true : false,
-            "Valor da Base de Cálculo da COFINS"
-        );
-        $this->dom->addChild(
-            $confinsoutr,
-            "pCOFINS",
-            $this->conditionalNumberFormatting($std->pCOFINS, 4),
-            ($std->pCOFINS !== null) ? true : false,
-            "Alíquota da COFINS (em percentual)"
-        );
-        $this->dom->addChild(
-            $confinsoutr,
-            "qBCProd",
-            $this->conditionalNumberFormatting($std->qBCProd, 4),
-            ($std->qBCProd !== null) ? true : false,
-            "Quantidade Vendida"
-        );
-        $this->dom->addChild(
-            $confinsoutr,
-            "vAliqProd",
-            $this->conditionalNumberFormatting($std->vAliqProd, 4),
-            ($std->vAliqProd !== null) ? true : false,
-            "Alíquota da COFINS (em reais)"
-        );
+        if (!isset($std->qBCProd)) {
+            $this->dom->addChild(
+                $confinsoutr,
+                "vBC",
+                $this->conditionalNumberFormatting($std->vBC),
+                ($std->vBC !== null) ? true : false,
+                "Valor da Base de Cálculo da COFINS"
+            );
+            $this->dom->addChild(
+                $confinsoutr,
+                "pCOFINS",
+                $this->conditionalNumberFormatting($std->pCOFINS, 4),
+                ($std->pCOFINS !== null) ? true : false,
+                "Alíquota da COFINS (em percentual)"
+            );
+        } else {
+            $this->dom->addChild(
+                $confinsoutr,
+                "qBCProd",
+                $this->conditionalNumberFormatting($std->qBCProd, 4),
+                ($std->qBCProd !== null) ? true : false,
+                "Quantidade Vendida"
+            );
+            $this->dom->addChild(
+                $confinsoutr,
+                "vAliqProd",
+                $this->conditionalNumberFormatting($std->vAliqProd, 4),
+                ($std->vAliqProd !== null) ? true : false,
+                "Alíquota da COFINS (em reais)"
+            );
+        }
         $this->dom->addChild(
             $confinsoutr,
             "vCOFINS",
@@ -7183,15 +7201,20 @@ class Make
         foreach ($this->aDI as $nItem => $aDI) {
             $prod = $this->aProd[$nItem];
             foreach ($aDI as $child) {
-                $node = $prod->getElementsByTagName("xPed")->item(0);
-                if (!empty($node)) {
-                    $prod->insertBefore($child, $node);
+                $nodexped = $prod->getElementsByTagName("xPed")->item(0);
+                if (!empty($nodexped)) {
+                    $prod->insertBefore($child, $nodexped);
                 } else {
-                    $node = $prod->getElementsByTagName("FCI")->item(0);
-                    if (!empty($node)) {
-                        $prod->insertBefore($child, $node);
+                    $nodenItemPed = $prod->getElementsByTagName("nItemPed")->item(0);
+                    if (!empty($nodenItemPed)) {
+                        $prod->insertBefore($child, $nodenItemPed);
                     } else {
-                        $this->dom->appChild($prod, $child, "Inclusão do node DI");
+                        $node = $prod->getElementsByTagName("FCI")->item(0);
+                        if (!empty($node)) {
+                            $prod->insertBefore($child, $node);
+                        } else {
+                            $this->dom->appChild($prod, $child, "Inclusão do node DI");
+                        }
                     }
                 }
             }
@@ -7314,6 +7337,7 @@ class Make
         $this->stdTot->vNF = $this->stdTot->vProd
             - $this->stdTot->vDesc
             + $this->stdTot->vST
+            + $this->stdTot->vFCPST
             + $this->stdTot->vFrete
             + $this->stdTot->vSeg
             + $this->stdTot->vOutro
@@ -7451,20 +7475,11 @@ class Make
      */
     protected function equilizeParameters(stdClass $std, $possible)
     {
-        $arr = get_object_vars($std);
-        foreach ($possible as $key) {
-            if (!array_key_exists($key, $arr)) {
-                $std->$key = null;
-            } else {
-                if (is_string($std->$key)) {
-                    $std->$key = trim(Strings::replaceUnacceptableCharacters($std->$key));
-                    if ($this->replaceAccentedChars) {
-                        $std->$key = Strings::toASCII($std->$key);
-                    }
-                }
-            }
-        }
-        return $std;
+        return Strings::equilizeParameters(
+            $std,
+            $possible,
+            $this->replaceAccentedChars
+        );
     }
 
     /**
@@ -7491,24 +7506,4 @@ class Make
         }
         return null;
     }
-
-    /*
-    protected function conditionalNumberFormatting($value = null, array $decimal): string
-    {
-        if (!is_numeric($value)) {
-            return null;
-        }
-        $num = (float) $value;
-        $l = explode('.', $num);
-        $declen = 0;
-        if (!empty($l[1])) {
-            $declen = strlen($l[1]);
-        }
-        if ($declen < $decimal[0]) {
-            return number_format($num, $decimal[0], '.', '');
-        } elseif ($declen > $decimal[1]) {
-            return number_format($num, $decimal[1], '.', '');
-        }
-        return $num;
-    }*/
 }
