@@ -1,11 +1,13 @@
 <?php
-declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: fernando
  * Date: 28/09/18
  * Time: 18:00
  */
+
+declare(strict_types=1);
 
 namespace NFePHP\NFe\Tests\Common;
 
@@ -14,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 class WebservicesTest extends TestCase
 {
-    const SEFAZ_AMB_HOMOLOG = '2';
+    const SEFAZ_AMB_HOMOLOG = 2;
     const NFE_MODELO_55 = 55;
     const AN_INVALID_BRAZILIAN_UF_ABREV = 'XY';
 
@@ -23,7 +25,7 @@ class WebservicesTest extends TestCase
      */
     protected $xml;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $filepath = __DIR__ . '/../../storage/wsnfe_4.00_mod55.xml';
         $this->xml = file_get_contents($filepath);

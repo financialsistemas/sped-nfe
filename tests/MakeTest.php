@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace NFePHP\NFe\Tests;
@@ -231,7 +232,7 @@ class MakeTest extends TestCase
         $this->assertEmpty($ide->getElementsByTagName('xJust')->item(0));
     }
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->make = new Make();
     }
