@@ -2788,7 +2788,7 @@ class Make
         $this->dom->addChild(
             $comb,
             "qTemp",
-            $this->conditionalNumberFormatting($std->qTemp, 4),
+            $this->conditionalNumberFormatting($std->qTemp, 2),
             false,
             "$identificador [item $std->item] Quantidade de combustível faturada à temperatura ambiente."
         );
@@ -3411,6 +3411,7 @@ class Make
                 break;
             case '51':
                 $this->stdTot->vBC += (float) !empty($std->vBC) ? $std->vBC : 0;
+                $this->stdTot->vICMS += (float) !empty($std->vICMS) ? $std->vICMS : 0;
 
                 $icms = $this->dom->createElement("ICMS51");
                 $this->dom->addChild(
