@@ -19,7 +19,7 @@ class ToolsTest extends NFeTestCase
      */
     protected $tools;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->tools = new ToolsFake(
             $this->configJson,
@@ -36,6 +36,14 @@ class ToolsTest extends NFeTestCase
         $this->tools->sefazConsultaRecibo('');
     }
 
+    public function test_sefaz_consulta_recibo_valido()
+    {
+        $this->tools->sefazConsultaRecibo('143220020730398');
+        $request = $this->tools->getRequest();
+        $esperado = $this->getCleanXml(__DIR__ . '/fixtures/xml/exemplo_request_consulta_recibo.xml');
+        $this->assertSame($esperado, $request);
+    }
+
     /**
      * Testa a consulta pela chave validando o parâmetro da chave vazio.
      */
@@ -43,6 +51,14 @@ class ToolsTest extends NFeTestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->tools->sefazConsultaChave('');
+    }
+
+    public function test_sefaz_consulta_chave_valida()
+    {
+        $this->tools->sefazConsultaChave('43211105730928000145650010000002401717268120');
+        $request = $this->tools->getRequest();
+        $esperado = $this->getCleanXml(__DIR__ . '/fixtures/xml/exemplo_request_consulta_chave.xml');
+        $this->assertSame($esperado, $request);
     }
 
     /**
@@ -104,8 +120,7 @@ class ToolsTest extends NFeTestCase
      */
     public function test_sefaz_envia_lote_parametro_invalido()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Envia Lote: XMLs de NF-e deve ser um array!');
+        $this->expectException(\TypeError::class);
         $this->tools->sefazEnviaLote(""); //@phpstan-ignore-line
     }
 
@@ -161,6 +176,72 @@ class ToolsTest extends NFeTestCase
         $this->assertTrue(is_string($resposta));
         $request = $this->buildExpectedNfe($xml, $idLote);
         $this->assertEquals($request, $tools->getRequest());
+    }
+
+    /**
+     * @return void
+     */
+    public function test_sefaz_inutiliza()
+    {
+        $this->tools->sefazInutiliza(1, 1, 10, 'Testando Inutilização', 1, '22');
+        $request = $this->tools->getRequest();
+        $esperado = $this->getCleanXml(__DIR__ . '/fixtures/xml/exemplo_xml_inutiliza.xml');
+        $this->assertSame($esperado, $request);
+    }
+
+    /**
+     * @return void
+     */
+    public function test_sefaz_cadastro_cnpj()
+    {
+        $this->tools->sefazCadastro('RS', '20532295000154');
+        $request = $this->tools->getRequest();
+        $esperado = $this->getCleanXml(__DIR__ . '/fixtures/xml/exemplo_xml_cadastro_cnpj.xml');
+        $this->assertSame($esperado, $request);
+    }
+
+    /**
+     * @return void
+     */
+    public function test_sefaz_cadastro_ie()
+    {
+        $this->tools->sefazCadastro('RS', '', '1234567');
+        $request = $this->tools->getRequest();
+        $esperado = $this->getCleanXml(__DIR__ . '/fixtures/xml/exemplo_xml_cadastro_ie.xml');
+        $this->assertSame($esperado, $request);
+    }
+
+    /**
+     * @return void
+     */
+    public function test_sefaz_cadastro_cpf()
+    {
+        $this->tools->sefazCadastro('RS', '', '', '60140174028');
+        $request = $this->tools->getRequest();
+        $esperado = $this->getCleanXml(__DIR__ . '/fixtures/xml/exemplo_xml_cadastro_cpf.xml');
+        $this->assertSame($esperado, $request);
+    }
+
+    /**
+     * @return void
+     */
+    public function test_sefaz_status()
+    {
+        $this->tools->sefazStatus('RS');
+        $request = $this->tools->getRequest();
+        $esperado = $this->getCleanXml(__DIR__ . '/fixtures/xml/exemplo_xml_status.xml');
+        $this->assertSame($esperado, $request);
+    }
+
+    /**
+     * @return void
+     */
+    public function test_sefaz_dist_dfe()
+    {
+        $this->tools->sefazDistDFe(100, 200);
+        $request = $this->tools->getRequest();
+        $esperado = $this->getCleanXml(__DIR__ . '/fixtures/xml/exemplo_xml_dist_dfe.xml');
+        $this->assertSame($esperado, $request);
     }
 
     /**
