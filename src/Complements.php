@@ -26,7 +26,7 @@ class Complements
         }
         $st = new Standardize();
         $key = ucfirst($st->whichIs($request));
-        if ($key != 'NFe' && $key != 'EnvEvento' && $key != 'InutNFe') {
+        if ($key !== 'NFe' && $key !== 'EnvEvento' && $key !== 'InutNFe') {
             //wrong document, this document is not able to recieve a protocol
             throw DocumentsException::wrongDocument(0, $key);
         }
@@ -225,7 +225,11 @@ class Complements
         $cUF = !empty($infInut->getElementsByTagName('cUF')->item(0)->nodeValue)
             ? $infInut->getElementsByTagName('cUF')->item(0)->nodeValue : '';
         $ano = $infInut->getElementsByTagName('ano')->item(0)->nodeValue;
-        $cnpj = $infInut->getElementsByTagName('CNPJ')->item(0)->nodeValue;
+
+        // Checks if exists CNPJ tag in the XML of event, otherwise, uses the CPF tag
+        $cpfOrCnpjTag = $infInut->getElementsByTagName('CNPJ')->item(0) ? 'CNPJ' : 'CPF';
+
+        $cpfOrCnpjTagValue = $infInut->getElementsByTagName($cpfOrCnpjTag)->item(0)->nodeValue;
         $mod = $infInut->getElementsByTagName('mod')->item(0)->nodeValue;
         $serie = $infInut->getElementsByTagName('serie')->item(0)->nodeValue;
         $nNFIni = $infInut->getElementsByTagName('nNFIni')->item(0)->nodeValue;
@@ -250,7 +254,7 @@ class Complements
         $retcUF = !empty($retInfInut->getElementsByTagName('cUF')->item(0)->nodeValue)
             ? $retInfInut->getElementsByTagName('cUF')->item(0)->nodeValue : $cUF;
         $retano = $retInfInut->getElementsByTagName('ano')->item(0)->nodeValue;
-        $retcnpj = $retInfInut->getElementsByTagName('CNPJ')->item(0)->nodeValue;
+        $retcpfCnpj = $retInfInut->getElementsByTagName($cpfOrCnpjTag)->item(0)->nodeValue;
         $retmod = $retInfInut->getElementsByTagName('mod')->item(0)->nodeValue;
         $retserie = $retInfInut->getElementsByTagName('serie')->item(0)->nodeValue;
         $retnNFIni = $retInfInut->getElementsByTagName('nNFIni')->item(0)->nodeValue;
@@ -260,7 +264,7 @@ class Complements
             $tpAmb != $rettpAmb ||
             $cUF != $retcUF ||
             $ano != $retano ||
-            $cnpj != $retcnpj ||
+            $cpfOrCnpjTagValue != $retcpfCnpj ||
             $mod != $retmod ||
             $serie != $retserie ||
             $nNFIni != $retnNFIni ||

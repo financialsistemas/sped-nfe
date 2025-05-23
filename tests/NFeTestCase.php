@@ -6,10 +6,10 @@ use PHPUnit\Framework\TestCase;
 
 class NFeTestCase extends TestCase
 {
-    public $fixturesPath = '';
-    public $configJson = '';
-    public $contentpfx = '';
-    public $passwordpfx = '';
+    public string $fixturesPath = '';
+    public string $configJson = '';
+    public string $contentpfx = '';
+    public string $passwordpfx = '';
 
     public function __construct($name = null, array $data = array(), $dataName = '')
     {
@@ -20,7 +20,7 @@ class NFeTestCase extends TestCase
             "tpAmb" => 2,
             "razaosocial" => "SUA RAZAO SOCIAL LTDA",
             "siglaUF" => "SP",
-            "cnpj" => "99999999999999",
+            "cnpj" => "93623057000128",
             "schemes" => "PL_009_V4",
             "versao" => "4.00",
             "tokenIBPT" => "AAAAAAA",
@@ -33,7 +33,7 @@ class NFeTestCase extends TestCase
                 "proxyPass" => ""
             ]
         ];
-        $this->contentpfx = file_get_contents($this->fixturesPath . "certs/test_certificate.pfx");
+        $this->contentpfx = file_get_contents($this->fixturesPath . "certs/novo_test_certificate.pfx");
         $this->passwordpfx = 'nfephp';
         $this->configJson = json_encode($config);
     }
