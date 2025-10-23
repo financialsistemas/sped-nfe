@@ -12,7 +12,7 @@ use DOMException;
  * @property stdClass $stdTot
  * @property array $aII
  * @method equilizeParameters($std, $possible)
- * @method conditionalNumberFormatting($value, $decimal)
+ * @method conditionalNumberFormatting($value, $decimal = 2)
  */
 trait TraitTagDetII
 {
@@ -33,7 +33,9 @@ trait TraitTagDetII
             'vIOF'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        $identificador = "P01 <II> Item: $std->item -";
+        $identificador = "P01 II Item: $std->item -";
+        //dados para calculo de vItem
+        $this->aVItem[$std->item]['vII'] = ($std->vII ?? 0);
         //totalizador
         $this->stdTot->vII += (float) $std->vII;
         $tii = $this->dom->createElement('II');

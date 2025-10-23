@@ -8,12 +8,12 @@ use DOMElement;
 use DOMException;
 
 /**
- * @property  Dom $dom
+ * @property Dom $dom
  * @property DOMElement $cana
  * @property array $aForDia
  * @property array $aDeduc
  * @method equilizeParameters($std, $possible)
- * @method conditionalNumberFormatting($value, $decimal)
+ * @method conditionalNumberFormatting($value, $decimal = 2)
  */
 trait TraitTagCana
 {
@@ -37,7 +37,7 @@ trait TraitTagCana
             'vLiqFor'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        $identificador = 'ZC01 <cana> -';
+        $identificador = 'ZC01 cana -';
         $this->cana = $this->dom->createElement("cana");
         $this->dom->addChild(
             $this->cana,
@@ -112,7 +112,7 @@ trait TraitTagCana
             'qtde'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        $identificador = 'ZC04 <forDia> -';
+        $identificador = 'ZC04 forDia -';
         $forDia = $this->dom->createElement("forDia");
         $forDia->setAttribute("dia", $std->dia);
         $this->dom->addChild(
@@ -137,7 +137,7 @@ trait TraitTagCana
     {
         $possible = ['xDed', 'vDed'];
         $std = $this->equilizeParameters($std, $possible);
-        $identificador = 'ZC10 <deduc> -';
+        $identificador = 'ZC10 deduc -';
         $deduc = $this->dom->createElement("deduc");
         $this->dom->addChild(
             $deduc,

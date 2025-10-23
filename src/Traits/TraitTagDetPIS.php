@@ -13,7 +13,7 @@ use DOMException;
  * @property array $aPIS
  * @property array $aPISST
  * @method equilizeParameters($std, $possible)
- * @method conditionalNumberFormatting($value, $decimal)
+ * @method conditionalNumberFormatting($value, $decimal = 2)
  */
 trait TraitTagDetPIS
 {
@@ -36,7 +36,9 @@ trait TraitTagDetPIS
             'vAliqProd'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        $identificador = "Q01 <PIS> Item: $std->item -";
+        $identificador = "Q01 PIS Item: $std->item -";
+        //dados para calculo de vITem
+        $this->aVItem[$std->item]['vPIS'] = $std->vPIS;
         switch ($std->CST) {
             case '01':
             case '02':
@@ -178,7 +180,7 @@ trait TraitTagDetPIS
                     $this->dom->addChild(
                         $pisItem,
                         'vAliqProd',
-                        $this->conditionalNumberFormatting($std->vAliqProd, 4),
+                        $this->conditionalNumberFormatting($std->vAliqProd ?? null, 4),
                         false,
                         " $identificador Alíquota do PIS (em reais) (vAliqProd)"
                     );
@@ -221,7 +223,10 @@ trait TraitTagDetPIS
             'indSomaPISST',
         ];
         $std = $this->equilizeParameters($std, $possible);
-        $identificador = "R01 <PISST> Item: $std->item -";
+        $identificador = "R01 PISST Item: $std->item -";
+        //dados para calculo de vITem
+        $this->aVItem[$std->item]['indSomaPISST'] = ($std->indSomaPISST ?? 0);
+        $this->aVItem[$std->item]['vPISST'] = ($std->vPIS ?? 0);
         if ($std->indSomaPISST == 1) {
             $this->stdTot->vPISST += $std->vPIS;
         }
@@ -252,7 +257,7 @@ trait TraitTagDetPIS
             $this->dom->addChild(
                 $pisst,
                 'vAliqProd',
-                $this->conditionalNumberFormatting($std->vAliqProd, 4),
+                $this->conditionalNumberFormatting($std->vAliqProd ?? null, 4),
                 true,
                 "$identificador  Alíquota do PIS (em reais) (vAliqProd)"
             );

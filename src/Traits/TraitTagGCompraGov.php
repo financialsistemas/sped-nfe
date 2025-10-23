@@ -12,7 +12,7 @@ use DOMException;
  * @property  Dom $dom
  * @property DOMElement $gCompraGov
  * @method equilizeParameters($std, $possible)
- * @method conditionalNumberFormatting($value, $decimal)
+ * @method conditionalNumberFormatting($value, $decimal = 2)
  */
 trait TraitTagGCompraGov
 {
@@ -26,9 +26,9 @@ trait TraitTagGCompraGov
      */
     public function taggCompraGov(stdClass $std): DOMElement
     {
-        $possible = ['tpEnteGov', 'pRedutor'];
+        $possible = ['tpEnteGov', 'pRedutor', 'tpOperGov'];
         $std = $this->equilizeParameters($std, $possible);
-        $identificador = 'B31 <gCompraGov> - ';
+        $identificador = 'B31 gCompraGov -';
         $gc = $this->dom->createElement("gCompraGov");
         $this->dom->addChild(
             $gc,
@@ -43,6 +43,13 @@ trait TraitTagGCompraGov
             $this->conditionalNumberFormatting($std->pRedutor, 4),
             true,
             $identificador . "Percentual de redução de alíquota em compra governamental (pRedutor)"
+        );
+        $this->dom->addChild(
+            $gc,
+            "tpOperGov",
+            $std->tpOperGov,
+            true,
+            $identificador . "Tipo de operação com o ente governamental (tpOperGov)"
         );
         $this->gCompraGov = $gc;
         return $gc;
